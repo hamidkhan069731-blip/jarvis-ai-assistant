@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>J.A.R.V.I.S.</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Boot overlay -->
+  <div id="boot" class="boot">
+    <div class="boot-orb"></div>
+    <div class="boot-title">J.A.R.V.I.S.</div>
+    <div class="boot-sub">Just A Rather Very Intelligent System</div>
+    <div class="boot-status" id="boot-status">initializing…</div>
+  </div>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">J.A.R.V.I.S.</span>
+      <span class="brand-sub">personal assistant</span>
+    </div>
+    <div class="topbar-right">
+      <span id="provider-badge" class="badge" title="Active AI brain">local</span>
+      <span id="conn-badge" class="badge badge-warn" title="Connection status">
+        <span class="dot"></span><span id="conn-text">connecting</span>
+      </span>
+      <button id="btn-mic-lang" class="icon-btn" title="Recognition language">EN</button>
+      <button id="btn-settings" class="icon-btn" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 8a4 4 0 100 8 4 4 0 000-8zm8.94 4a7.9 7.9 0 00-.14-1.48l2.03-1.58-2-3.46-2.39.96a7.9 7.9 0 00-2.56-1.48L15.5 1h-4l-.38 2.48a7.9 7.9 0 00-2.56 1.48l-2.39-.96-2 3.46 2.03 1.58a7.98 7.98 0 000 2.96l-2.03 1.58 2 3.46 2.39-.96c.76.62 1.63 1.12 2.56 1.48L11.5 23h4l.38-2.48a7.9 7.9 0 002.56-1.48l2.39.96 2-3.46-2.03-1.58c.09-.48.14-.98.14-1.48z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: system telemetry -->
+    <aside class="col col-left">
+      <section class="panel">
+        <h2 class="panel-title">System</h2>
+        <div class="gauges" id="gauges">
+          <div class="gauge" data-metric="cpu">
+            <svg class="ring" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="34"/><circle class="ring-fg" cx="40" cy="40" r="34"/></svg>
+            <div class="gauge-val"><span data-field="cpu">–</span><small>%</small></div>
+            <div class="gauge-label">CPU</div>
+          </div>
+          <div class="gauge" data-metric="ram">
+            <svg class="ring" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="34"/><circle class="ring-fg" cx="40" cy="40" r="34"/></svg>
+            <div class="gauge-val"><span data-field="ram">–</span><small>%</small></div>
+            <div class="gauge-label">RAM</div>
+          </div>
+          <div class="gauge" data-metric="disk">
+            <svg class="ring" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="34"/><circle class="ring-fg" cx="40" cy="40" r="34"/></svg>
+            <div class="gauge-val"><span data-field="disk">–</span><small>%</small></div>
+            <div class="gauge-label">Disk</div>
+          </div>
+        </div>
+        <ul class="stat-list" id="stat-list">
+          <li><span>Memory</span><b data-field="ram_detail">–</b></li>
+          <li><span>Disk free</span><b data-field="disk_detail">–</b></li>
+          <li><span>Network</span><b data-field="net_detail">–</b></li>
+          <li><span>Battery</span><b data-field="battery_detail">–</b></li>
+          <li><span>Processes</span><b data-field="proc_detail">–</b></li>
+          <li><span>Uptime</span><b data-field="uptime_detail">–</b></li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">Diagnostics</h2>
+        <ul class="stat-list" id="diag-list">
+          <li><span>Brain</span><b data-diag="provider">–</b></li>
+          <li><span>Mode</span><b data-diag="mode">–</b></li>
+          <li><span>Tools</span><b data-diag="tools">–</b></li>
+          <li><span>Skills</span><b data-diag="skills">–</b></li>
+          <li><span>Voice out</span><b data-diag="tts">–</b></li>
+          <li><span>Voice in</span><b data-diag="stt">–</b></li>
+          <li><span>Permissions</span><b data-diag="permission_mode">–</b></li>
+        </ul>
+      </section>
+    </aside>
+
+    <!-- CENTER: orb + conversation -->
+    <section class="col col-center">
+      <div class="orb-stage">
+        <canvas id="orb" width="440" height="440" aria-hidden="true"></canvas>
+        <div class="orb-state" id="orb-state">idle</div>
+      </div>
+
+      <div class="quick-actions" id="quick-actions">
+        <button class="chip" data-say="What's my CPU and RAM?">System status</button>
+        <button class="chip" data-say="Find my PDFs in Downloads">Find PDFs</button>
+        <button class="chip" data-say="Organize my Downloads folder">Organize Downloads</button>
+        <button class="chip" data-say="Take a screenshot">Screenshot</button>
+        <button class="chip" data-say="What can you do?">Capabilities</button>
+      </div>
+
+      <div class="conversation" id="conversation" aria-live="polite"></div>
+
+      <form class="composer" id="composer" autocomplete="off">
+        <button type="button" id="btn-mic" class="mic-btn" title="Hold to talk (or press Ctrl+Space)" aria-label="Voice input">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.92V22h2v-3.08A7 7 0 0019 12h-2z"/></svg>
+        </button>
+        <input id="input" type="text" placeholder="Ask JARVIS…  (e.g. “open Chrome”, “Downloads organize karo”)" />
+        <button type="submit" id="btn-send" class="send-btn" title="Send">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+        </button>
+        <button type="button" id="btn-stop" class="stop-btn" title="Stop (interrupt)" hidden>Stop</button>
+      </form>
+    </section>
+
+    <!-- RIGHT: activity / tasks / memory / audit -->
+    <aside class="col col-right">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="activity" role="tab">Activity</button>
+        <button class="tab" data-tab="tasks" role="tab">Tasks</button>
+        <button class="tab" data-tab="memory" role="tab">Memory</button>
+        <button class="tab" data-tab="skills" role="tab">Skills</button>
+        <button class="tab" data-tab="audit" role="tab">Audit</button>
+      </div>
+
+      <div class="tab-panel active" data-panel="activity">
+        <div class="feed" id="activity-feed"></div>
+      </div>
+
+      <div class="tab-panel" data-panel="tasks">
+        <div class="feed" id="tasks-feed"><p class="empty">No tasks yet.</p></div>
+      </div>
+
+      <div class="tab-panel" data-panel="memory">
+        <form class="mem-add" id="mem-add">
+          <input id="mem-input" placeholder="Remember a fact about me…" />
+          <button type="submit" class="mini-btn">Save</button>
+        </form>
+        <div class="feed" id="memory-feed"><p class="empty">No memories yet.</p></div>
+      </div>
+
+      <div class="tab-panel" data-panel="audit">
+        <div class="feed" id="audit-feed"><p class="empty">Loading…</p></div>
+      </div>
+
+      <div class="tab-panel" data-panel="skills">
+        <div class="feed" id="skills-feed"><p class="empty">Loading…</p></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Approval modal -->
+  <div id="approval" class="modal" hidden>
+    <div class="modal-card approval-card">
+      <div class="approval-head">
+        <span id="appr-risk" class="risk-pill">medium</span>
+        <h3>Confirmation required</h3>
+      </div>
+      <p id="appr-reason" class="appr-reason"></p>
+      <div class="appr-detail">
+        <div><label>Tool</label><code id="appr-tool"></code></div>
+        <div><label>Category</label><code id="appr-cat"></code></div>
+        <div class="appr-args-wrap"><label>Arguments</label><pre id="appr-args"></pre></div>
+      </div>
+      <label class="remember-row" id="appr-remember-row">
+        <input type="checkbox" id="appr-remember" /> Remember my choice for this action
+      </label>
+      <div class="modal-actions">
+        <button id="appr-deny" class="btn btn-ghost">Deny</button>
+        <button id="appr-approve" class="btn btn-primary">Approve</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings drawer -->
+  <div id="settings" class="drawer" hidden>
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h3>Settings</h3>
+        <button id="settings-close" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="drawer-body" id="settings-body">
+        <div class="set-group">
+          <h4>AI Brain</h4>
+          <label class="set-row">
+            <span>Provider</span>
+            <select id="set-provider">
+              <option value="local">Local (offline)</option>
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="openai">OpenAI / compatible</option>
+            </select>
+          </label>
+          <p class="set-hint" id="key-hint"></p>
+        </div>
+        <div class="set-group">
+          <h4>Permissions</h4>
+          <label class="set-row">
+            <span>Mode</span>
+            <select id="set-permission">
+              <option value="strict">Strict — confirm almost everything</option>
+              <option value="balanced">Balanced — auto only safe actions</option>
+              <option value="trusted">Trusted — auto low & medium</option>
+            </select>
+          </label>
+          <label class="set-row toggle">
+            <span>Enable shell / Python execution</span>
+            <input type="checkbox" id="set-shell" />
+          </label>
+          <p class="set-hint">Shell is off by default. Dangerous commands always require confirmation even when enabled.</p>
+          <div class="standing-approvals">
+            <div class="set-row">
+              <span>Standing approvals</span>
+              <button type="button" id="perm-revoke-all" class="mini-btn danger">Revoke all</button>
+            </div>
+            <ul id="perm-list" class="perm-list"></ul>
+            <p class="set-hint">Actions you chose to remember run without asking. Revoke any you no longer want automatic.</p>
+          </div>
+        </div>
+        <div class="set-group">
+          <h4>Voice</h4>
+          <label class="set-row toggle">
+            <span>Speak replies</span>
+            <input type="checkbox" id="set-tts" />
+          </label>
+          <label class="set-row toggle">
+            <span>Use server voice (pyttsx3) instead of browser</span>
+            <input type="checkbox" id="set-server-tts" />
+          </label>
+          <label class="set-row">
+            <span>Wake word</span>
+            <input type="text" id="set-wake" placeholder="hey jarvis" />
+          </label>
+          <label class="set-row toggle">
+            <span>Wake-word listening</span>
+            <input type="checkbox" id="set-wake-on" />
+          </label>
+          <label class="set-row">
+            <span>Speech rate <output id="rate-out"></output></span>
+            <input type="range" id="set-rate" min="80" max="300" step="5" />
+          </label>
+        </div>
+        <div class="set-group">
+          <h4>Assistant</h4>
+          <label class="set-row toggle">
+            <span>Long-term memory</span>
+            <input type="checkbox" id="set-memory" />
+          </label>
+          <label class="set-row toggle">
+            <span>Proactive alerts</span>
+            <input type="checkbox" id="set-proactive" />
+          </label>
+        </div>
+        <div class="set-group">
+          <h4>File access roots</h4>
+          <ul class="roots" id="set-roots"></ul>
+          <p class="set-hint">File tools are sandboxed to these folders. Configure via <code>.env</code>.</p>
+        </div>
+      </div>
+      <div class="drawer-foot">
+        <span id="settings-saved" class="saved-tag" hidden>saved</span>
+        <button id="settings-save" class="btn btn-primary">Save settings</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-stack" class="toast-stack"></div>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

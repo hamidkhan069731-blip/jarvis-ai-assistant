@@ -1,0 +1,8 @@
+{
+  "name": "notes",
+  "version": "1.0.0",
+  "description": "Quick personal notes — add, list, and clear notes stored locally.",
+  "author": "JARVIS core team",
+  "entry": "skill.py",
+  "enabled": true
+}

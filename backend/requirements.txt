@@ -1,0 +1,27 @@
+# ============================================================================
+# J.A.R.V.I.S. — Python backend dependencies
+# Target: Python 3.11+ (tested on 3.14). All heavy/optional deps are guarded
+# in code so the app still boots if an optional package is missing.
+# ============================================================================
+
+# --- Core runtime (required) ---
+fastapi>=0.110
+uvicorn[standard]>=0.29
+httpx>=0.27
+python-multipart>=0.0.9
+
+# --- System monitoring & control ---
+psutil>=5.9
+
+# --- AI providers (optional; local provider needs none of these) ---
+anthropic>=0.39
+
+# --- Voice (optional; server-side TTS/STT) ---
+pyttsx3>=2.90
+SpeechRecognition>=3.10
+
+# --- Windows integration (optional; enables SAPI5 voices, window control) ---
+pywin32>=306 ; sys_platform == "win32"
+
+# --- Testing ---
+pytest>=8.0

@@ -1,0 +1,34 @@
+# ── Python ─────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# ── Secrets / environment ──────────────────────────────
+.env
+*.env.local
+
+# ── Runtime data (DB, logs, backups, screenshots, notes) ─
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/*.db-journal
+data/backups/
+data/logs/
+data/screenshots/
+data/notes.txt
+
+# ── Node (if any tooling gets installed) ───────────────
+node_modules/
+
+# ── OS / editor ────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
